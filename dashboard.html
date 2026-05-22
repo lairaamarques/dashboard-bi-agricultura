@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoSemente BI - Dashboard Gerencial</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            background-color: #f4f7f5;
+            color: #1a2e26;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 260px;
+            background-color: #2e5a44;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            justify-content: space-between;
+            overflow-y: auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+
+        .brand-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #d4a373;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #2e5a44;
+            font-size: 18px;
+        }
+
+        .brand-name {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: #c2d5cc;
+            text-decoration: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item.active a, .menu-item a:hover {
+            background-color: #4d8b6d;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid #4d8b6d;
+            padding-top: 16px;
+            font-size: 11px;
+            color: #a3c2b2;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex-grow: 1;
+            padding: 32px;
+            overflow-y: auto;
+            height: 100vh;
+        }
+
+        /* Header Styling */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .header-title h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1a2e26;
+        }
+
+        .header-title p {
+            font-size: 14px;
+            color: #62726b;
+            margin-top: 4px;
+        }
+
+        .header-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #e2ede7;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #2e5a44;
+        }
+
+        .sync-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #2ecc71;
+            border-radius: 50%;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background-color: #ffffff;
+            padding: 6px 16px;
+            border-radius: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background-color: #2e5a44;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .user-info span {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* KPI Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.015);
+            border: 1px solid #eef2f0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: #2e5a44;
+        }
+
+        .card.accent::before {
+            background-color: #d4a373;
+        }
+
+        .card-title {
+            font-size: 14px;
+            color: #62726b;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a2e26;
+            margin: 12px 0 4px 0;
+        }
+
+        .card-sub {
+            font-size: 12px;
+            color: #8fa096;
+        }
+
+        /* Charts & Business Intelligence Section */
+        .bi-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        @media (max-width: 1024px) {
+            .bi-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-box {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.015);
+            border: 1px solid #eef2f0;
+        }
+
+        .box-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .box-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a2e26;
+        }
+
+        /* Simulated Charts using pure SVG/CSS */
+        .chart-container {
+            height: 240px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding-top: 20px;
+            border-left: 2px solid #e2ede7;
+            border-bottom: 2px solid #e2ede7;
+            position: relative;
+        }
+
+        .bar-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            width: 12%;
+        }
+
+        .bar {
+            width: 100%;
+            background-color: #4d8b6d;
+            border-radius: 6px 6px 0 0;
+            transition: height 0.5s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .bar:hover {
+            background-color: #2e5a44;
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -22px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #2e5a44;
+        }
+
+        .bar-label {
+            font-size: 11px;
+            color: #62726b;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* Business Indicators List */
+        .indicator-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .indicator-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background-color: #f8faf9;
+            border-radius: 8px;
+            border-left: 4px solid #d4a373;
+        }
+
+        .indicator-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a2e26;
+        }
+
+        .indicator-info p {
+            font-size: 11px;
+            color: #8fa096;
+        }
+
+        .indicator-badge {
+            background-color: #faedcd;
+            color: #bc6c25;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* Data Table Section */
+        .table-box {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.015);
+            border: 1px solid #eef2f0;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            text-align: left;
+        }
+
+        .data-table th {
+            background-color: #f8faf9;
+            color: #62726b;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 14px 16px;
+            border-bottom: 1px solid #eef2f0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .data-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #eef2f0;
+            font-size: 14px;
+            color: #1a2e26;
+        }
+
+        .data-table tr:hover {
+            background-color: #fdfdfd;
+        }
+
+        .status-pill {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-pill.disponivel {
+            background-color: #d1f2d9;
+            color: #1faa46;
+        }
+
+        .status-pill.reservado {
+            background-color: #fff3cd;
+            color: #b7791f;
+        }
+
+        .filter-section {
+            margin-bottom: 24px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #eef2f0;
+            border-radius: 6px;
+            font-size: 13px;
+            background-color: white;
+            cursor: pointer;
+        }
+
+        .logout-btn {
+            background-color: #dc2626;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background-color: #b91c1c;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                padding: 16px;
+                margin-bottom: 16px;
+            }
+
+            .main-content {
+                height: auto;
+                margin-left: 0;
+                padding: 16px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+
+            .header-meta {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+
+            .bi-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navegação Lateral (Sidebar) -->
+    <div class="sidebar">
+        <div>
+            <div class="brand">
+                <div class="brand-icon">🌱</div>
+                <div class="brand-name">EcoSemente BI</div>
+            </div>
+            <ul class="menu-list">
+                <li class="menu-item active"><a href="dashboard.html">📊 Painel de Negócios</a></li>
+                <li class="menu-item"><a href="estoque.html">📦 Estoque de Recursos</a></li>
+                <li class="menu-item"><a href="viveiro.html">🌱 Viveiro de Mudas</a></li>
+                <li class="menu-item"><a href="vendas.html">💰 Registro de Vendas</a></li>
+                <li class="menu-item"><a href="sementeiras.html">🌳 Árvores Sementeiras</a></li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            TCC 1 - IFAM / CA-TADS<br>Módulo Gerencial Web v1.0<br><br>
+            <button class="logout-btn" onclick="logout()">Sair</button>
+        </div>
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <div class="main-content">
+        
+        <!-- Cabeçalho Principal -->
+        <div class="header">
+            <div class="header-title">
+                <h1>Painel de Inteligência de Negócios</h1>
+                <p>Associação de Produtores da Comunidade Ribeirinha — Manaus, AM</p>
+            </div>
+            <div class="header-meta">
+                <div class="sync-status">
+                    <div class="sync-dot"></div>
+                    Sincronizado
+                </div>
+                <div class="user-profile">
+                    <div class="user-avatar" id="userAvatar">LL</div>
+                    <div class="user-info">
+                        <span id="userName">Usuário</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filter-section">
+            <label style="font-weight: 600; color: #2e5a44; font-size: 14px;">Filtrar por Tipo:</label>
+            <select class="filter-select" id="productFilter" onchange="filterByProduct()">
+                <option value="">Todos os Produtos</option>
+                <option value="acai">Açaí</option>
+                <option value="andiroba">Andiroba</option>
+                <option value="ucuuba">Ucuúba</option>
+                <option value="copaiba">Copaíba</option>
+                <option value="patahua">Patauá</option>
+            </select>
+        </div>
+
+        <!-- Grade de Cartões KPI -->
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-title">Matrizes Mapeadas</div>
+                <div class="card-value">142</div>
+                <div class="card-sub">Árvores sementeiras ativas no campo</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Estoque de Sementes</div>
+                <div class="card-value">84 Sacas</div>
+                <div class="card-sub">Prontas para comercialização</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Mudas Prontas</div>
+                <div class="card-value">3.250</div>
+                <div class="card-sub">Destinadas a reflorestamento</div>
+            </div>
+            <div class="card accent">
+                <div class="card-title">Receita Projetada</div>
+                <div class="card-value">R$ 24.500</div>
+                <div class="card-sub">Contratos potenciais ativos</div>
+            </div>
+        </div>
+
+        <!-- Seção BI: Gráfico + Indicadores Rápidos -->
+        <div class="bi-section">
+            
+            <!-- Caixa do Gráfico -->
+            <div class="chart-box">
+                <div class="box-header">
+                    <div class="box-title">Volume de Estoque Comercializável por Espécie (Sacas)</div>
+                </div>
+                <div class="chart-container">
+                    <div class="bar-wrapper">
+                        <div class="bar" style="height: 180px;"><span class="bar-value">32</span></div>
+                        <div class="bar-label">Andiroba</div>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="bar" style="height: 120px; background-color: #d4a373;"><span class="bar-value">22</span></div>
+                        <div class="bar-label">Ucuúba</div>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="bar" style="height: 90px;"><span class="bar-value">15</span></div>
+                        <div class="bar-label">Copaíba</div>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="bar" style="height: 60px; background-color: #d4a373;"><span class="bar-value">10</span></div>
+                        <div class="bar-label">Açaí</div>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="bar" style="height: 30px;"><span class="bar-value">5</span></div>
+                        <div class="bar-label">Patauá</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Caixa de Alertas e Indicadores -->
+            <div class="chart-box">
+                <div class="box-header">
+                    <div class="box-title">Alertas de Negócio</div>
+                </div>
+                <div class="indicator-list">
+                    <div class="indicator-item">
+                        <div class="indicator-info">
+                            <h4>Demanda Alta: Andiroba</h4>
+                            <p>Empresas de cosméticos buscando sementes.</p>
+                        </div>
+                        <div class="indicator-badge">Gargalo</div>
+                    </div>
+                    <div class="indicator-item" style="border-left-color: #4d8b6d;">
+                        <div class="indicator-info">
+                            <h4>Mudas Prontas</h4>
+                            <p>Lote 04 pronto para reflorestamento.</p>
+                        </div>
+                        <div class="indicator-badge" style="background-color: #d1f2d9; color: #1faa46;">Liberado</div>
+                    </div>
+                    <div class="indicator-item">
+                        <div class="indicator-info">
+                            <h4>Safra: Ucuúba</h4>
+                            <p>Nova colheita iniciada este mês.</p>
+                        </div>
+                        <div class="indicator-badge" style="background-color: #dbeafe; color: #1e40af;">Novo</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela de Inventário/Vendas -->
+        <div class="table-box">
+            <div class="box-header">
+                <div class="box-title">Inventário Comercial da Agricultura Familiar</div>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Produto / Espécie</th>
+                        <th>Categoria</th>
+                        <th>Quantidade</th>
+                        <th>Família Produtora</th>
+                        <th>Status Mercado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Sementes de Andiroba</td>
+                        <td>Sacas</td>
+                        <td>12 sacas</td>
+                        <td>Família Souza - Rio Negro</td>
+                        <td><span class="status-pill disponivel">Disponível</span></td>
+                    </tr>
+                    <tr>
+                        <td>Mudas de Ucuúba (Matrizes)</td>
+                        <td>Mudas</td>
+                        <td>450 unidades</td>
+                        <td>Família Marins - Costa do Sol</td>
+                        <td><span class="status-pill reservado">Reservado</span></td>
+                    </tr>
+                    <tr>
+                        <td>Frutas de Açaí Nativo</td>
+                        <td>Polpa/Saca</td>
+                        <td>25 sacas</td>
+                        <td>Família Lima - Igarapé Açú</td>
+                        <td><span class="status-pill disponivel">Disponível</span></td>
+                    </tr>
+                    <tr>
+                        <td>Sementes de Copaíba</td>
+                        <td>Sacas</td>
+                        <td>8 sacas</td>
+                        <td>Família Silva - Rio Preto</td>
+                        <td><span class="status-pill disponivel">Disponível</span></td>
+                    </tr>
+                    <tr>
+                        <td>Sementes de Patauá</td>
+                        <td>Sacas</td>
+                        <td>5 sacas</td>
+                        <td>Família Ferreira - Igarapé</td>
+                        <td><span class="status-pill reservado">Reservado</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        function checkAuth() {
+            const isAuth = sessionStorage.getItem('isAuthenticated');
+            const userName = sessionStorage.getItem('userName');
+            if (!isAuth) {
+                window.location.href = 'index.html';
+            } else {
+                document.getElementById('userName').textContent = userName.charAt(0).toUpperCase() + userName.slice(1);
+                const initials = userName.substring(0, 2).toUpperCase();
+                document.getElementById('userAvatar').textContent = initials;
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('isAuthenticated');
+            sessionStorage.removeItem('userName');
+            window.location.href = 'index.html';
+        }
+
+        function filterByProduct() {
+            const filter = document.getElementById('productFilter').value;
+            const rows = document.querySelectorAll('.data-table tbody tr');
+            rows.forEach(row => {
+                if (!filter || row.textContent.toLowerCase().includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        checkAuth();
+    </script>
+</body>
+</html>
